@@ -69,7 +69,7 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
     // ne referim la split-ul care maximizeaza IG
     // pair-ul intors este format din (split_index, split_value)
     int splitIndex = -1, splitValue = -1;
-    double maxEntropy = 0.0;
+    double maxEntropy = -1000000.0;
     // std::cerr << "Am initializat" << '\n';
 
     for_each(dimensions.begin(), dimensions.end(),
@@ -83,15 +83,16 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
         for_each(uniq.begin(), uniq.end(),
                 [&splitIndex, &splitValue, &samples, currDim, &maxEntropy]
                 (int currVal) {
-            pair<vector<vector<int>>, vector<vector<int>>> currSplit
-                = split(samples, currDim, currVal);
+            pair<vector<int>, vector<int>> currSplit
+                = get_split_as_indexes(samples, currDim, currVal);
             if (currSplit.leftSplit.size() && currSplit.rightSplit.size()) {
-                // std::cerr << "Am split pt uniq = " << currVal << '\n';
                 double currEntropy = get_entropy(samples);
-                double leftEntropy = get_entropy(currSplit.leftSplit);
-                double rightEntropy = get_entropy(currSplit.rightSplit);
+                double leftEntropy =
+                    get_entropy_by_indexes(samples, currSplit.leftSplit);
+                double rightEntropy =
+                    get_entropy_by_indexes(samples, currSplit.rightSplit);
 
-                currEntropy -= (currSplit.first.size() * leftEntropy +
+                currEntropy -= ((double)currSplit.first.size() * leftEntropy +
                                 currSplit.second.size() * rightEntropy) /
                                 samples.size();
 
@@ -160,7 +161,15 @@ void Node::train(const vector<vector<int>> &samples) {
 int Node::predict(const vector<int> &image) const {
     // TODO(you)
     // Intoarce rezultatul prezis de catre decision tree
-    return 0;
+    if (is_leaf) {
+        return result;
+    }
+
+    if (image[split_index] <= split_value) {
+        return left->predict(image);
+    }
+
+    return right->predict(image);
 }
 
 bool same_class(const vector<vector<int>> &samples) {
@@ -245,8 +254,8 @@ vector<int> compute_unique(const vector<vector<int>> &samples, const int col) {
 }
 
 pair<vector<vector<int>>, vector<vector<int>>> split(
-    const vector<vector<int>> &samples, const int split_index,
-    const int split_value) {
+        const vector<vector<int>> &samples, const int split_index,
+        const int split_value) {
     // Intoarce cele 2 subseturi de teste obtinute in urma separarii
     // In functie de split_index si split_value
     vector<vector<int>> left, right;
