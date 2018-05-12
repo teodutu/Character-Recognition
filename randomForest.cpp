@@ -45,13 +45,13 @@ void RandomForest::build() {
 
     int data_size = images.size() / num_trees;
 
-    std::cerr << "numTrees = " << num_trees << '\n';
+    // std::cerr << "numTrees = " << num_trees << '\n';
 
     for (int i = 0; i < num_trees; i++) {
         // cout << "Creating Tree nr: " << i << endl;
-        std::cerr << i << '\n';
+        // std::cerr << i << '\n';
         random_samples = get_random_samples(images, data_size);
-        std::cerr << i << '\n';
+        // std::cerr << i << '\n';
 
         // Construieste un Tree nou si il antreneaza
         trees.push_back(Node());
@@ -64,5 +64,11 @@ int RandomForest::predict(const vector<int> &image) {
     // Va intoarce cea mai probabila prezicere pentru testul din argument
     // se va interoga fiecare Tree si se va considera raspunsul final ca
     // fiind cel majoritar
-    return 0;
+    vector<int> pred(10);
+
+    for_each(trees.begin(), trees.end(), [&pred, &image](Node &node) {
+        ++pred[node.predict(image)];
+    });
+
+    return *max_element(pred.begin(), pred.end());
 }
