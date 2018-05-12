@@ -85,7 +85,6 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
         for_each(uniq.begin(), uniq.end() - 1,
                 [&splitIndex, &splitValue, &samples,
                  &currSplit, currDim, &maxEntropy](int currVal) {
-            // if (currVal != )
             currSplit = split(samples, currDim, currVal);
             // std::cerr << "Am split pt uniq = " << currVal << '\n';
             double currEntropy = get_entropy(samples);
@@ -127,7 +126,7 @@ void Node::train(const vector<vector<int>> &samples) {
         //     std::cerr << '\n';
         // });
 
-        vector<int> randomDim = random_dimensions(784);
+        vector<int> randomDim = random_dimensions(785);
 
         // std::cerr << "Dimensions: " << randomDim.size() << '\n';
         // for_each(randomDim.begin(), randomDim.end(), [](int dim) {
@@ -135,25 +134,25 @@ void Node::train(const vector<vector<int>> &samples) {
         // });
         // std::cerr << "\n";
 
-        // pair<int, int> splitParams = find_best_split(samples, randomDim);
+        pair<int, int> splitParams = find_best_split(samples, randomDim);
         // // std::cerr << "splitIndex: " << splitParams.index
         //           // << "splitValue: " << splitParams.value << '\n';
         //
-        // if (splitParams.index == -1) {
-        //     make_leaf(samples, isSingleClass);
-        // }
-        //
-        // split_index = splitParams.index;
-        // split_value = splitParams.value;
-        //
-        // left = make_shared<Node>();
-        // right = make_shared<Node>();
-        //
-        // pair<vector<vector<int>>, vector<vector<int>>> bestSplit =
-        //         split(samples, split_index, split_value);
-        //
-        // left->train(bestSplit.leftSplit);
-        // right->train(bestSplit.rightSplit);
+        if (splitParams.index == -1) {
+            make_leaf(samples, isSingleClass);
+        }
+
+        split_index = splitParams.index;
+        split_value = splitParams.value;
+
+        left = make_shared<Node>();
+        right = make_shared<Node>();
+
+        pair<vector<vector<int>>, vector<vector<int>>> bestSplit =
+                split(samples, split_index, split_value);
+
+        left->train(bestSplit.leftSplit);
+        right->train(bestSplit.rightSplit);
     }
 }
 
