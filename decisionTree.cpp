@@ -70,35 +70,36 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
     // pair-ul intors este format din (split_index, split_value)
     int splitIndex = -1, splitValue = -1;
     double maxEntropy = 0.0;
-    vector<int> uniq;
-    pair<vector<vector<int>>, vector<vector<int>>> currSplit;
     // std::cerr << "Am initializat" << '\n';
 
     for_each(dimensions.begin(), dimensions.end(),
-            [&splitIndex, &splitValue, &samples, &uniq, &currSplit, &maxEntropy]
+            [&splitIndex, &splitValue, &samples, &maxEntropy]
             (const int currDim) {
         // std::cerr << "N-am uinq" << '\n';
-        uniq = compute_unique(samples, currDim);
+        vector<int> uniq = compute_unique(samples, currDim);
 
         // std::cerr << "Am uinq" << '\n';
 
-        for_each(uniq.begin(), uniq.end() - 1,
-                [&splitIndex, &splitValue, &samples,
-                 &currSplit, currDim, &maxEntropy](int currVal) {
-            currSplit = split(samples, currDim, currVal);
-            // std::cerr << "Am split pt uniq = " << currVal << '\n';
-            double currEntropy = get_entropy(samples);
-            double leftEntropy = get_entropy(currSplit.leftSplit);
-            double rightEntropy = get_entropy(currSplit.rightSplit);
+        for_each(uniq.begin(), uniq.end(),
+                [&splitIndex, &splitValue, &samples, currDim, &maxEntropy]
+                (int currVal) {
+            pair<vector<vector<int>>, vector<vector<int>>> currSplit
+                = split(samples, currDim, currVal);
+            if (currSplit.leftSplit.size() && currSplit.rightSplit.size()) {
+                // std::cerr << "Am split pt uniq = " << currVal << '\n';
+                double currEntropy = get_entropy(samples);
+                double leftEntropy = get_entropy(currSplit.leftSplit);
+                double rightEntropy = get_entropy(currSplit.rightSplit);
 
-            currEntropy -= (currSplit.first.size() * leftEntropy +
-                            currSplit.second.size() * rightEntropy) /
-                            samples.size();
+                currEntropy -= (currSplit.first.size() * leftEntropy +
+                                currSplit.second.size() * rightEntropy) /
+                                samples.size();
 
-            if (currEntropy > maxEntropy) {
-                maxEntropy = currEntropy;
-                splitIndex = currDim;
-                splitValue = currVal;
+                if (currEntropy > maxEntropy) {
+                    maxEntropy = currEntropy;
+                    splitIndex = currDim;
+                    splitValue = currVal;
+                }
             }
         });
     });
@@ -140,19 +141,19 @@ void Node::train(const vector<vector<int>> &samples) {
         //
         if (splitParams.index == -1) {
             make_leaf(samples, isSingleClass);
+        } else {
+            split_index = splitParams.index;
+            split_value = splitParams.value;
+
+            left = make_shared<Node>();
+            right = make_shared<Node>();
+
+            pair<vector<vector<int>>, vector<vector<int>>> bestSplit =
+                    split(samples, split_index, split_value);
+
+            left->train(bestSplit.leftSplit);
+            right->train(bestSplit.rightSplit);
         }
-
-        split_index = splitParams.index;
-        split_value = splitParams.value;
-
-        left = make_shared<Node>();
-        right = make_shared<Node>();
-
-        pair<vector<vector<int>>, vector<vector<int>>> bestSplit =
-                split(samples, split_index, split_value);
-
-        left->train(bestSplit.leftSplit);
-        right->train(bestSplit.rightSplit);
     }
 }
 
@@ -236,7 +237,7 @@ vector<int> compute_unique(const vector<vector<int>> &samples, const int col) {
 
     // std::cerr << "Put'em" << '\n';
 
-    sort(uniqueValues.begin(), uniqueValues.end());
+    // sort(uniqueValues.begin(), uniqueValues.end());
     //
     // std::cerr << "Sorted'em" << '\n';
 
