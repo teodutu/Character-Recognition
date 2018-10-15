@@ -1,4 +1,4 @@
-# Tema3_SD
+# Tema3 SD - 2018
 
 ## Algoritm de rezolvare:
 
