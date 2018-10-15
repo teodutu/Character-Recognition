@@ -1,4 +1,3 @@
-// copyright Luca Istrate, Andrei Medar
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>

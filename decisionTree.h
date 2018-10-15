@@ -1,8 +1,3 @@
-//
-// Created by andrei on 21.12.2017 : andrei_medar@yahoo.com
-// copyright Luca Istrate, Andrei Medar
-//
-
 #ifndef _DECISIONTREE_H_  // NOLINT(build/header_guard)
 #define _DECISIONTREE_H_  // NOLINT(build/header_guard)
 

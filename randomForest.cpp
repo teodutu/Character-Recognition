@@ -1,6 +1,3 @@
-// copyright Luca Istrate, Andrei Medar
-// Copyright Dutu Teodor-Stefan, Popescu Daniel-Octavian
-
 #include "./randomForest.h"
 #include <iostream>
 #include <random>
@@ -74,3 +71,7 @@ int RandomForest::predict(const vector<int> &image) {
     auto pos = max_element(pred.begin(), pred.end());
     return distance(pred.begin(), pos);
 }
+=======
+// MLC
+// PUTU - 2011
+>>>>>>> 0bde432e40303b0f7fff31680ceb0a4ac3ae4b1f

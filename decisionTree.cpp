@@ -1,6 +1,3 @@
-// copyright Luca Istrate, Andrei Medar
-// Copyright Dutu Teodor-Stefan, Popescu Daniel-Octavian
-
 #include "./decisionTree.h"
 #include <algorithm>
 #include <cassert>
@@ -275,3 +272,7 @@ vector<int> random_dimensions(const int size) {
 
     return rez;
 }
+=======
+// MLC
+// PUTU - 2011
+>>>>>>> 0bde432e40303b0f7fff31680ceb0a4ac3ae4b1f
