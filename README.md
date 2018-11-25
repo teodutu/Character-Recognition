@@ -1,4 +1,4 @@
-# Tema3 SD - 2018
+# Tema3 SD (Character Recognition) - 2018
 
 ## Algoritm de rezolvare:
 
